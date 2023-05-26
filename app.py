@@ -12,16 +12,15 @@ def encode_decode():
     key = request.form['private_key']
     message = request.form['message']
     mode = request.form['mode']
-    
+
     if mode == 'e':
-        result = encode(key, message)
+        result = Encode(key, message)
     elif mode == 'd':
-        result = decode(key, message)
+        result = Decode(key, message)
     else:
         result = 'Invalid Mode'
-    
-    return render_template('result.html', result=result)
 
+    return render_template('result.html', result=result)
 
 # function to encode
 def Encode(key, message):
@@ -46,8 +45,6 @@ def Decode(key, message):
         dec.append(chr(decoded_char))
 
     return "".join(dec)
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)
