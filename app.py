@@ -25,10 +25,10 @@ def encode_decode():
 # function to encode
 def Encode(key, message):
     enc = []
-    for i in range(len(message)):
-        key_c = key[i % len(key)]
-        encoded_char = (ord(message[i]) + ord(key_c)) % 65536
-        enc.append(chr(encoded_char))
+    for char in message:
+        key_c = key[len(enc) % len(key)]
+        encoded_char = chr(ord(char) + ord(key_c))
+        enc.append(encoded_char)
 
     encoded_str = "".join(enc)
     encoded_bytes = encoded_str.encode("utf-8")
@@ -39,43 +39,10 @@ def Encode(key, message):
 def Decode(key, message):
     dec = []
     decoded_base64 = base64.urlsafe_b64decode(message).decode("utf-8")
-    for i in range(len(decoded_base64)):
-        key_c = key[i % len(key)]
-        decoded_char = (65536 + ord(decoded_base64[i]) - ord(key_c)) % 65536
-        dec.append(chr(decoded_char))
-
-    return "".join(dec)
-
-# handle surrogate pairs in encoding
-def Encode(key, message):
-    enc = []
-    for i in range(len(message)):
-        key_c = key[i % len(key)]
-        encoded_char = (ord(message[i]) + ord(key_c)) % 65536
-        if encoded_char >= 0xD800 and encoded_char <= 0xDBFF:
-            enc.append(message[i])
-        else:
-            enc.append(chr(encoded_char))
-
-    encoded_str = "".join(enc)
-    encoded_bytes = encoded_str.encode("utf-8")
-    encoded_base64 = base64.urlsafe_b64encode(encoded_bytes).decode("utf-8")
-    return encoded_base64
-
-# handle surrogate pairs in decoding
-def Decode(key, message):
-    dec = []
-    decoded_base64 = base64.urlsafe_b64decode(message).decode("utf-8")
-    i = 0
-    while i < len(decoded_base64):
-        key_c = key[i % len(key)]
-        decoded_char = (65536 + ord(decoded_base64[i]) - ord(key_c)) % 65536
-        if decoded_char >= 0xD800 and decoded_char <= 0xDBFF:
-            dec.append(decoded_base64[i:i+2])
-            i += 2
-        else:
-            dec.append(chr(decoded_char))
-            i += 1
+    for char in decoded_base64:
+        key_c = key[len(dec) % len(key)]
+        decoded_char = chr(ord(char) - ord(key_c))
+        dec.append(decoded_char)
 
     return "".join(dec)
 
