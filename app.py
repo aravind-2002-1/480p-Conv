@@ -22,22 +22,32 @@ def encode_decode():
     
     return render_template('result.html', result=result)
 
-def encode(key, message):
-    enc=[]
-    for i in range(len(message)):
-        key_c = key[i % len(key)]
-        enc.append(chr((ord(message[i]) + ord(key_c)) % 256))
-    
-    return base64.urlsafe_b64encode("".join(enc).encode()).decode()
 
-def decode(key, message):
-    dec=[]
-    message = base64.urlsafe_b64decode(message).decode()
+# function to encode
+def Encode(key, message):
+    enc = []
     for i in range(len(message)):
         key_c = key[i % len(key)]
-        dec.append(chr((256 + ord(message[i])- ord(key_c)) % 256))
-    
+        encoded_char = (ord(message[i]) + ord(key_c)) % 65536
+        enc.append(chr(encoded_char))
+
+    encoded_str = "".join(enc)
+    encoded_bytes = encoded_str.encode("utf-8")
+    encoded_base64 = base64.urlsafe_b64encode(encoded_bytes).decode("utf-8")
+    return encoded_base64
+
+# function to decode
+def Decode(key, message):
+    dec = []
+    decoded_base64 = base64.urlsafe_b64decode(message).decode("utf-8")
+    for i in range(len(decoded_base64)):
+        key_c = key[i % len(key)]
+        decoded_char = (65536 + ord(decoded_base64[i]) - ord(key_c)) % 65536
+        dec.append(chr(decoded_char))
+
     return "".join(dec)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
